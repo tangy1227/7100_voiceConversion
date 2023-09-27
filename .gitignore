@@ -2,3 +2,9 @@
 VCTK-Corpus-0.92.zip
 VCTK-Corpus-0.92/
 wget-log.1
+
+# Models
+pretrain/
+
+# Resource
+autovc-master/
