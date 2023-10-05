@@ -21,7 +21,7 @@ def main(config):
 
     solver.train(save_model_path='trained_model.ckpt')
         
-    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

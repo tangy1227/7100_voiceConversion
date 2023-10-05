@@ -141,7 +141,10 @@ class Solver(object):
                     log += ", {}: {:.4f}".format(tag, loss[tag])
                 print(log)
         
-        torch.save(self.G.state_dict(), save_model_path)
+        torch.save({
+            'model': self.G.state_dict(),
+            'optimizer': self.g_optimizer.state_dict(),
+        }, save_model_path)
         print("Model saved to {} after training.".format(save_model_path))
 
         self.writer.close()
