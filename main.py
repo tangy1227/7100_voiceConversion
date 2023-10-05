@@ -1,5 +1,6 @@
 import os
 import argparse
+import torch
 from solver_encoder import Solver
 from dataLoader import get_loader
 from torch.backends import cudnn
@@ -18,7 +19,7 @@ def main(config):
     
     solver = Solver(vcc_loader, config)
 
-    solver.train()
+    solver.train(save_model_path='trained_model.ckpt')
         
     
 
@@ -40,6 +41,9 @@ if __name__ == '__main__':
     
     # Miscellaneous.
     parser.add_argument('--log_step', type=int, default=10)
+
+    # Tensorboard.
+    parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs')
 
     config = parser.parse_args()
     print(config)
