@@ -1,7 +1,7 @@
 # 7100_voiceConversion
 
 ## AutoVC Baseline
-* vanilla autoencoder serves as a measure of how well the network is reconstructing the input data
+* Vanilla autoencoder serves as a measure of how well the network is reconstructing the input data
 
 ## Possible Modification
 Add ASR for linuistic content feature
@@ -12,8 +12,9 @@ Use an extra pitch extractor to remove any pitch information for the encode embe
 `g_03280000` pretrained vocoder "HiFi-GAN"
 
 ## Inferencing
-1. `make_spect.py` to convert audio into mel-spec
+1. `make_spect.py` to convert audio into mel-spec and output to `spmel/`
 2. `make_metadata.py` 
+3. `conversion.ipynb` use trained autoVC model to generate `results.pkl`
 
 ## Resources
 https://github.com/KnurpsBram/AutoVC_WavenetVocoder_GriffinLim_experiments/blob/master/AutoVC_WavenetVocoder_GriffinLim_experiments_17jun2020.ipynb
