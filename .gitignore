@@ -8,3 +8,6 @@ pretrain/
 
 # Resource
 autovc-master/
+
+# other
+__pycache__/

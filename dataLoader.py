@@ -73,7 +73,6 @@ class Utterances(data.Dataset):
         """Return the number of spkrs."""
         return self.num_tokens
 
-
 def get_loader(root_dir, batch_size=16, len_crop=128, num_workers=0):
     """Build and return a data loader."""
     
