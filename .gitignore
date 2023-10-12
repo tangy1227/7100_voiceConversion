@@ -11,3 +11,4 @@ autovc-master/
 
 # other
 __pycache__/
+logs/
