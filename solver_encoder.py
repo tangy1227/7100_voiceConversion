@@ -36,6 +36,7 @@ class Solver(object):
 
         # tensorboard
         self.writer = SummaryWriter(log_dir=config.log_dir)
+        self.num_ckpt = config.num_ckpt
 
             
     def build_model(self):
@@ -56,7 +57,7 @@ class Solver(object):
     
 
                 
-    def train(self, save_model_path):
+    def train(self):
         # Set data loader.
         data_loader = self.vcc_loader
         
@@ -95,13 +96,15 @@ class Solver(object):
                         
             # Identity mapping loss
             x_identic, x_identic_psnt, code_real = self.G(x_real, emb_org, emb_org)
+            x_real = x_real.unsqueeze(1)
+            # print(f'x_real: {x_real.shape}, x_identic: {x_identic.shape}, x_identic_psnt: {x_identic_psnt.shape}')
             g_loss_id = F.mse_loss(x_real, x_identic)   
             g_loss_id_psnt = F.mse_loss(x_real, x_identic_psnt)   
             
             # Code semantic loss.
             code_reconst = self.G(x_identic_psnt, emb_org, None)
+            # print(f'code_real: {code_real.shape}, code_reconst: {code_reconst.shape}')
             g_loss_cd = F.l1_loss(code_real, code_reconst)
-
 
             # Backward and optimize.
             g_loss = g_loss_id + g_loss_id_psnt + self.lambda_cd * g_loss_cd
@@ -122,11 +125,13 @@ class Solver(object):
             # Increment the current iteration
             current_iteration += 1            
 
-            # if (i + 1) % save_checkpoint_interval == 0:
-            #     checkpoint_path = 'model_checkpoint_{}.pth'.format(i + 1)
-            #     torch.save(self.G.state_dict(), checkpoint_path)
-            #     print("Model checkpoint saved at iteration {}.".format(i + 1))
-          
+            if (i + 1) % self.num_ckpt == 0:
+                checkpoint_path = 'model_checkpoint_{}.ckpt'.format(i + 1)
+                torch.save({
+                            'model': self.G.state_dict(),
+                            'optimizer': self.g_optimizer.state_dict(),
+                            }, checkpoint_path)
+                print("Model checkpoint saved at iteration {}.".format(i + 1))
 
             # =================================================================================== #
             #                                 4. Miscellaneous                                    #
@@ -141,6 +146,8 @@ class Solver(object):
                     log += ", {}: {:.4f}".format(tag, loss[tag])
                 print(log)
         
+
+        save_model_path = 'model_checkpoint_{}.ckpt'.format(i + 1)
         torch.save({
             'model': self.G.state_dict(),
             'optimizer': self.g_optimizer.state_dict(),

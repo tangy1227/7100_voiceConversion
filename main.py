@@ -19,7 +19,7 @@ def main(config):
     
     solver = Solver(vcc_loader, config)
 
-    solver.train(save_model_path='trained_model.ckpt')
+    solver.train()
         
 
 
@@ -40,10 +40,11 @@ if __name__ == '__main__':
     parser.add_argument('--len_crop', type=int, default=128, help='dataloader output sequence length')
     
     # Miscellaneous.
-    parser.add_argument('--log_step', type=int, default=10)
+    parser.add_argument('--log_step', type=int, default=100)
 
     # Tensorboard.
     parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs')
+    parser.add_argument('--num_ckpt', type=int, default=250000)
 
     config = parser.parse_args()
     print(config)

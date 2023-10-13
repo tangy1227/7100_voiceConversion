@@ -16,6 +16,7 @@ class Utterances(data.Dataset):
         self.step = 10
         
         metaname = os.path.join(self.root_dir, "train.pkl")
+        print(metaname)
         meta = pickle.load(open(metaname, "rb"))
         
         """Load data using multiprocessing"""

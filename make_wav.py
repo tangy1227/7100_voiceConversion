@@ -3,7 +3,7 @@ from pydub import AudioSegment
 
 if __name__ == '__main__':
     dataset_path = '7100_voiceConversion/VCTK-Corpus-0.92/wav48_silence_trimmed'
-    targetDir = '7100_voiceConversion/VCTK-Corpus-0.92/wav'
+    targetDir = '7100_voiceConversion/VCTK-Corpus-0.92/wav-test'
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
         
@@ -13,7 +13,7 @@ if __name__ == '__main__':
     for s in all_items:
         
         print(f'current speaker: {s}')
-        directory_path = os.path.join('7100_voiceConversion/VCTK-Corpus-0.92/wav', s)
+        directory_path = os.path.join(targetDir, s)
         if os.path.exists(directory_path):
             continue
 
