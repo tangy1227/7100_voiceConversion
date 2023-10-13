@@ -1,5 +1,6 @@
 import os
 import argparse
+import torch
 from solver_encoder import Solver
 from dataLoader import get_loader
 from torch.backends import cudnn
@@ -18,19 +19,19 @@ def main(config):
     
     solver = Solver(vcc_loader, config)
 
-    solver.train()
+    solver.train(save_model_path='trained_model.ckpt')
         
-    
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
     # Model configuration.
     parser.add_argument('--lambda_cd', type=float, default=1, help='weight for hidden code loss')
-    parser.add_argument('--dim_neck', type=int, default=16)
+    parser.add_argument('--dim_neck', type=int, default=32)
     parser.add_argument('--dim_emb', type=int, default=256)
     parser.add_argument('--dim_pre', type=int, default=512)
-    parser.add_argument('--freq', type=int, default=16)
+    parser.add_argument('--freq', type=int, default=32)
     
     # Training configuration.
     parser.add_argument('--data_dir', type=str, default='./spmel')
@@ -40,6 +41,9 @@ if __name__ == '__main__':
     
     # Miscellaneous.
     parser.add_argument('--log_step', type=int, default=10)
+
+    # Tensorboard.
+    parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs')
 
     config = parser.parse_args()
     print(config)

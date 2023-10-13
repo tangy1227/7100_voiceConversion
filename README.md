@@ -3,9 +3,13 @@
 ## AutoVC Baseline
 * Vanilla autoencoder serves as a measure of how well the network is reconstructing the input data
 
-## Possible Modification
-Add ASR for linuistic content feature \
-Use an extra pitch extractor to remove any pitch information for the encode embedding
+## Proposal
+Research about different embedding for the VC system \
+Speaker encoder: D-Vector \
+Linguistic Content: Conformer (ASR), Wav2Vec \
+Possible Prosodic Encoder: ? \
+Decoder: AutoVC decoder \
+Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN \
 
 ## Filename Notes
 `3000000-BL.ckpt` pretrained speech encoder Wan et al. [2018] \

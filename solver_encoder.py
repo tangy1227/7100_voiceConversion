@@ -1,4 +1,6 @@
 from model_vc import Generator
+from torch.utils.tensorboard import SummaryWriter
+
 import torch
 import torch.nn.functional as F
 import time
@@ -32,6 +34,9 @@ class Solver(object):
         # Build the model and tensorboard.
         self.build_model()
 
+        # tensorboard
+        self.writer = SummaryWriter(log_dir=config.log_dir)
+
             
     def build_model(self):
         
@@ -51,7 +56,7 @@ class Solver(object):
     
 
                 
-    def train(self):
+    def train(self, save_model_path):
         # Set data loader.
         data_loader = self.vcc_loader
         
@@ -61,6 +66,9 @@ class Solver(object):
         # Start training.
         print('Start training...')
         start_time = time.time()
+
+        # Create a variable to keep track of the current iteration
+        current_iteration = 0
         for i in range(self.num_iters):
 
             # =================================================================================== #
@@ -107,6 +115,19 @@ class Solver(object):
             loss['G/loss_id_psnt'] = g_loss_id_psnt.item()
             loss['G/loss_cd'] = g_loss_cd.item()
 
+            # Log the loss values to TensorBoard
+            for tag, value in loss.items():
+                self.writer.add_scalar(tag, value, current_iteration)
+
+            # Increment the current iteration
+            current_iteration += 1            
+
+            # if (i + 1) % save_checkpoint_interval == 0:
+            #     checkpoint_path = 'model_checkpoint_{}.pth'.format(i + 1)
+            #     torch.save(self.G.state_dict(), checkpoint_path)
+            #     print("Model checkpoint saved at iteration {}.".format(i + 1))
+          
+
             # =================================================================================== #
             #                                 4. Miscellaneous                                    #
             # =================================================================================== #
@@ -119,9 +140,11 @@ class Solver(object):
                 for tag in keys:
                     log += ", {}: {:.4f}".format(tag, loss[tag])
                 print(log)
-                
+        
+        torch.save({
+            'model': self.G.state_dict(),
+            'optimizer': self.g_optimizer.state_dict(),
+        }, save_model_path)
+        print("Model saved to {} after training.".format(save_model_path))
 
-    
-    
-
-    
+        self.writer.close()
