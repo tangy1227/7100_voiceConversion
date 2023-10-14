@@ -12,3 +12,4 @@ autovc-master/
 # other
 __pycache__/
 logs/
+generated-audio/

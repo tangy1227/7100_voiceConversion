@@ -3,7 +3,7 @@ from pydub import AudioSegment
 
 if __name__ == '__main__':
     dataset_path = '7100_voiceConversion/VCTK-Corpus-0.92/wav48_silence_trimmed'
-    targetDir = '7100_voiceConversion/VCTK-Corpus-0.92/wav-test'
+    targetDir = '7100_voiceConversion/VCTK-Corpus-0.92/wav-16k'
     if not os.path.isdir(targetDir):
         os.makedirs(targetDir)
         
@@ -34,4 +34,5 @@ if __name__ == '__main__':
                     read_file = os.path.join(s_path, r)
 
                     flac_file = AudioSegment.from_file(read_file, format="flac")
+                    flac_file = flac_file.set_frame_rate(16000)
                     flac_file.export(export_file, format='wav')

@@ -20,7 +20,7 @@ num_uttrs = 10
 len_crop = 128
 
 # Directory containing mel-spectrograms
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel'
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
 dirName, subdirList, _ = next(os.walk(rootDir))
 print('Found directory: %s' % dirName)
 

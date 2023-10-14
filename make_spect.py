@@ -36,9 +36,9 @@ b, a = butter_highpass(30, 16000, order=5)
 
 
 # audio file directory
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-test'
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k'
 # spectrogram directory
-targetDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-test'
+targetDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
 
 
 dirName, subdirList, _ = next(os.walk(rootDir))
