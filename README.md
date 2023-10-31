@@ -21,8 +21,9 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN \
 2. `make_metadata.py` 
 3. `conversion.ipynb` use trained autoVC model to generate `results.pkl`
 
-## Progress
-* data cleaning for training
+## To-Do 
+* Evaluation metric: compare with the baseline
+* Validation loss implementation
 
 ## Resources
 https://github.com/KnurpsBram/AutoVC_WavenetVocoder_GriffinLim_experiments/blob/master/AutoVC_WavenetVocoder_GriffinLim_experiments_17jun2020.ipynb
