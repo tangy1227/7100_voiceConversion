@@ -1,12 +1,13 @@
 """
 Generate speaker embeddings and metadata for testing,
 which contains [filename, speaker embedding, spectrogram]
+speaker embedding shape: (256,)
+spectrogram shape: (frames, 80)
 """
 import os
 import pickle
 from model_bl import D_VECTOR
 from collections import OrderedDict
-import soundfile as sf
 import numpy as np
 import torch
 
@@ -18,16 +19,15 @@ for key, val in c_checkpoint['model_b'].items():
     new_key = key[7:]
     new_state_dict[new_key] = val
 C.load_state_dict(new_state_dict)
+
 num_uttrs = 10
 len_crop = 128
-
-# Directory containing mel-spectrograms
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel'
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
 dirName, subdirList, _ = next(os.walk(rootDir))
-print('Found directory: %s' % dirName)
-
-
 speakers = []
+
+# going through make_metadata.py
+# question: what is the output dimension of the speaker encoder from 10 uttrs, does the author take the average?
 for speaker in sorted(subdirList):
     print('Processing speaker: %s' % speaker)
     utterances = []
@@ -35,34 +35,27 @@ for speaker in sorted(subdirList):
     _, _, fileList = next(os.walk(os.path.join(dirName,speaker)))
     
     # make speaker embedding
-    assert len(fileList) >= num_uttrs
-    idx_uttrs = np.random.choice(len(fileList), size=num_uttrs, replace=False)
+    assert len(fileList) >= num_uttrs # test to see if data set utterance is greater than the minimum
+    idx_uttrs = np.random.choice(len(fileList), size=num_uttrs, replace=False) # randomly pick number of utterance for each speaker in VCTK
     embs = []
     for i in range(num_uttrs):
         tmp = np.load(os.path.join(dirName, speaker, fileList[idx_uttrs[i]]))
-        candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
-        
+        candidates = np.delete(np.arange(len(fileList)), idx_uttrs) # remove the idx_uttrs and create a new array with size of [speaker uttr - len(idx_uttrs)]
+
         # choose another utterance if the current one is too short
-        while tmp.shape[0] < len_crop:
+        while tmp.shape[0] <= len_crop:
             idx_alt = np.random.choice(candidates)
             tmp = np.load(os.path.join(dirName, speaker, fileList[idx_alt]))
             candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
 
         left = np.random.randint(0, tmp.shape[0]-len_crop)
-        melsp = torch.from_numpy(tmp[np.newaxis, left:left+len_crop, :]).cuda()
+        melsp = torch.from_numpy(tmp[np.newaxis, left:left+len_crop, :]).cuda() # shape: [1, 128, 80]
 
         # D_VECTOR Model
-        emb = C(melsp)
-        embs.append(emb.detach().squeeze().cpu().numpy())     
-    utterances.append(np.mean(embs, axis=0))
+        emb = C(melsp) # shape: (1, 256)
+        embs.append(emb.detach().squeeze().cpu().numpy()) # shape: (10, 256), and after taking the mean become (256, )
+    utterances.append(np.mean(embs, axis=0)) # utterances = ['speaker', embs: (256, )]
     
-    # create file list
-    for fileName in sorted(fileList):
-        utterances.append(os.path.join(speaker,fileName))
     speakers.append(utterances)
-    
-# spmel/train.pkl
-print(os.path.join(rootDir, 'train.pkl'))
-with open(os.path.join(rootDir, 'train.pkl'), 'wb') as handle:
-    pickle.dump(speakers, handle)
+              
 
