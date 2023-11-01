@@ -9,9 +9,12 @@ Speaker encoder: D-Vector \
 Linguistic Content: Conformer (ASR), Wav2Vec \
 Possible Prosodic Encoder: ? \
 Decoder: AutoVC decoder \
-Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN \
+Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN 
 
 ## Filename Notes
+`model_bl` D-Vector Model
+
+## Model Filename Notes
 `3000000-BL.ckpt` pretrained speech encoder Wan et al. [2018] \
 `g_03280000` pretrained vocoder "HiFi-GAN" \
 `checkpoint_step001000000_ema.pth` pretrained vocoder Wavenet
@@ -26,6 +29,7 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN \
 * Evaluation metric: compare with the baseline
     * get the trained model to test on more audio files
     * possible to switch to a different vocoder
+    * test the difference shape for the `metadata.pkl`, especially the speaker embedding, and spectrogram
 * Validation loss implementation
 
 ## Resources

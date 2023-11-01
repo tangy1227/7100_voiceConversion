@@ -51,7 +51,7 @@ for speaker in sorted(subdirList):
 
         # D_VECTOR Model
         emb = C(melsp)
-        embs.append(emb.detach().squeeze().cpu().numpy())     
+        embs.append(emb.detach().squeeze().cpu().numpy())    
     utterances.append(np.mean(embs, axis=0))
     
     # create file list
