@@ -18,11 +18,14 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN \
 
 ## Inferencing
 1. `make_spect.py` to convert audio into mel-spec and output to `spmel/`
-2. `make_metadata.py` 
+2. `make_metadata.py` use to generate `train.pkl`
 3. `conversion.ipynb` use trained autoVC model to generate `results.pkl`
+4. `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
 
 ## To-Do 
 * Evaluation metric: compare with the baseline
+    * get the trained model to test on more audio files
+    * possible to switch to a different vocoder
 * Validation loss implementation
 
 ## Resources

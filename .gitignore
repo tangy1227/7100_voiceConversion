@@ -9,6 +9,7 @@ pretrain/
 # Resource
 autovc-master/
 hifi-gan-master/
+simple-autovc-master/
 
 # other
 __pycache__/
