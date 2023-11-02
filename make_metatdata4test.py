@@ -24,7 +24,8 @@ num_uttrs = 10
 len_crop = 128
 rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
 dirName, subdirList, _ = next(os.walk(rootDir))
-process_speakers = ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p236']
+process_speakers = ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p237']
+process_uttr = '001'
 speakers = []
 
 for speaker in sorted(subdirList):
@@ -64,15 +65,19 @@ for speaker in sorted(subdirList):
 
     #### Add Third element to utterances ####
     idx_uttrs_spec = np.random.choice(len(fileList), size=1, replace=False)[0]
-    spec = np.load(os.path.join(dirName, speaker, fileList[idx_uttrs_spec]))
-    print(f'file name: {fileList[idx_uttrs_spec]}, shape: {spec.shape}')
+    indices = [i for i, element in enumerate(fileList) if process_uttr in element]
+
+    # file = fileList[idx_uttrs_spec]
+    file = fileList[indices[0]]
+    spec = np.load(os.path.join(dirName, speaker, file))
+    print(f'file name: {file}, shape: {spec.shape}')
     utterances.append(spec)
 
     speakers.append(utterances)
 
 path_dir = '/home/ytang363/7100_voiceConversion'
-print(os.path.join(path_dir, 'metadata.pkl'))
-with open(os.path.join(path_dir, 'metadata.pkl'), 'wb') as handle:
+print(os.path.join(path_dir, 'metadata_001.pkl'))
+with open(os.path.join(path_dir, 'metadata_001.pkl'), 'wb') as handle:
     pickle.dump(speakers, handle)
               
 
