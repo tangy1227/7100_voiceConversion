@@ -29,10 +29,9 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN
 
 ## To-Do 
 * Evaluation metric: compare with the baseline
-    * get the trained model to test on more audio files
-    * possible to switch to a different vocoder
-    * test the difference shape for the `metadata.pkl`, especially the speaker embedding, and spectrogram
+    * Test out the vocoder performance by comparing the input mel-spec and calculated output mel-spec
 * Validation loss implementation
+* Possible to switch to a different vocoder
 
 ## Note (Update: 11/02)
 The current `metadata.pkl` has these speaker and utterance\
@@ -47,6 +46,8 @@ file name: p232_328_mic1.npy, shape: (189, 80)\
 file name: p233_386_mic1.npy, shape: (136, 80)\
 file name: p234_245_mic1.npy, shape: (187, 80)\
 file name: p236_268_mic1.npy, shape: (195, 80)
+
+`metadata_001` has speaker ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p237']
 
 ## Resources
 https://github.com/KnurpsBram/AutoVC_WavenetVocoder_GriffinLim_experiments/blob/master/AutoVC_WavenetVocoder_GriffinLim_experiments_17jun2020.ipynb

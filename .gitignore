@@ -10,7 +10,6 @@ pretrain/
 eval_audio/
 eval_audio_old/
 test.ipynb
-mcd.ipynb
 
 # Resource
 autovc-master/
