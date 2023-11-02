@@ -1,4 +1,4 @@
-# 7100_voiceConversion
+# Study of Encoder Embeddings of Any-to-Any Voice Conversion
 
 ## AutoVC Baseline
 * Vanilla autoencoder serves as a measure of how well the network is reconstructing the input data
