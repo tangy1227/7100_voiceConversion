@@ -34,6 +34,20 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN
     * test the difference shape for the `metadata.pkl`, especially the speaker embedding, and spectrogram
 * Validation loss implementation
 
+## Note (Update: 11/02)
+The current `metadata.pkl` has these speaker and utterance\
+file name: p225_298_mic1.npy, shape: (194, 80)\
+file name: p226_076_mic1.npy, shape: (180, 80)\
+file name: p227_091_mic1.npy, shape: (190, 80)\
+file name: p228_157_mic1.npy, shape: (279, 80)\
+file name: p229_305_mic1.npy, shape: (146, 80)\
+file name: p230_017_mic1.npy, shape: (249, 80)\
+file name: p231_361_mic1.npy, shape: (137, 80)\
+file name: p232_328_mic1.npy, shape: (189, 80)\
+file name: p233_386_mic1.npy, shape: (136, 80)\
+file name: p234_245_mic1.npy, shape: (187, 80)\
+file name: p236_268_mic1.npy, shape: (195, 80)
+
 ## Resources
 https://github.com/KnurpsBram/AutoVC_WavenetVocoder_GriffinLim_experiments/blob/master/AutoVC_WavenetVocoder_GriffinLim_experiments_17jun2020.ipynb
 
