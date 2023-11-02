@@ -24,17 +24,21 @@ num_uttrs = 10
 len_crop = 128
 rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
 dirName, subdirList, _ = next(os.walk(rootDir))
+process_speakers = ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p236']
 speakers = []
 
-# going through make_metadata.py
-# question: what is the output dimension of the speaker encoder from 10 uttrs, does the author take the average?
 for speaker in sorted(subdirList):
+    if speaker not in process_speakers:
+        continue
+
     print('Processing speaker: %s' % speaker)
     utterances = []
-    utterances.append(speaker)
+
+    #### Add first element to utterances ####
+    utterances.append(speaker) 
     _, _, fileList = next(os.walk(os.path.join(dirName,speaker)))
     
-    # make speaker embedding
+    #### speaker embedding ####
     assert len(fileList) >= num_uttrs # test to see if data set utterance is greater than the minimum
     idx_uttrs = np.random.choice(len(fileList), size=num_uttrs, replace=False) # randomly pick number of utterance for each speaker in VCTK
     embs = []
@@ -53,9 +57,22 @@ for speaker in sorted(subdirList):
 
         # D_VECTOR Model
         emb = C(melsp) # shape: (1, 256)
-        embs.append(emb.detach().squeeze().cpu().numpy()) # shape: (10, 256), and after taking the mean become (256, )
+        embs.append(emb.detach().squeeze().cpu().numpy()) # shape: (10, 256), and after taking the mean, it becomes (256, )
+
+    #### Add Second element to utterances ####
     utterances.append(np.mean(embs, axis=0)) # utterances = ['speaker', embs: (256, )]
-    
+
+    #### Add Third element to utterances ####
+    idx_uttrs_spec = np.random.choice(len(fileList), size=1, replace=False)[0]
+    spec = np.load(os.path.join(dirName, speaker, fileList[idx_uttrs_spec]))
+    print(f'file name: {fileList[idx_uttrs_spec]}, shape: {spec.shape}')
+    utterances.append(spec)
+
     speakers.append(utterances)
+
+path_dir = '/home/ytang363/7100_voiceConversion'
+print(os.path.join(path_dir, 'metadata.pkl'))
+with open(os.path.join(path_dir, 'metadata.pkl'), 'wb') as handle:
+    pickle.dump(speakers, handle)
               
 

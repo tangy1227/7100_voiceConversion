@@ -20,10 +20,12 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN
 `checkpoint_step001000000_ema.pth` pretrained vocoder Wavenet
 
 ## Inferencing
-1. `make_spect.py` to convert audio into mel-spec and output to `spmel/`
-2. `make_metadata.py` use to generate `train.pkl`
-3. `conversion.ipynb` use trained autoVC model to generate `results.pkl`
-4. `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
+* `make_spect.py` to convert audio into mel-spec and output to `spmel/`
+* `make_wav.py` use to convert flac to wav for the dataset
+* `make_metadata.py` use to generate `train.pkl`
+* `make_metadata4test.py` use to generate `metadata.pkl`
+* `conversion.ipynb` use trained autoVC model to generate `results.pkl`
+* `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
 
 ## To-Do 
 * Evaluation metric: compare with the baseline

@@ -6,6 +6,9 @@ wget-log.1
 # Models
 pretrain/
 
+# Eval
+eval_audio/
+
 # Resource
 autovc-master/
 hifi-gan-master/
