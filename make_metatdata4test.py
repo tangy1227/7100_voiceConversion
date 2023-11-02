@@ -25,7 +25,7 @@ len_crop = 128
 rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
 dirName, subdirList, _ = next(os.walk(rootDir))
 process_speakers = ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p237']
-process_uttr = '001'
+process_uttr = '002'
 speakers = []
 
 for speaker in sorted(subdirList):
@@ -76,8 +76,8 @@ for speaker in sorted(subdirList):
     speakers.append(utterances)
 
 path_dir = '/home/ytang363/7100_voiceConversion'
-print(os.path.join(path_dir, 'metadata_001.pkl'))
-with open(os.path.join(path_dir, 'metadata_001.pkl'), 'wb') as handle:
+print(os.path.join(path_dir, 'metadata_002.pkl'))
+with open(os.path.join(path_dir, 'metadata_002.pkl'), 'wb') as handle:
     pickle.dump(speakers, handle)
               
 

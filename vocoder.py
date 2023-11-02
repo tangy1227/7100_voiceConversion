@@ -5,7 +5,8 @@ from synthesis import build_model
 from synthesis import wavegen
 
 if __name__ == '__main__':
-    spect_vc = pickle.load(open('/home/ytang363/7100_voiceConversion/11-02_results.pkl', 'rb'))
+    process_uttr = '002'
+    spect_vc = pickle.load(open(f'/home/ytang363/7100_voiceConversion/{process_uttr}_baseline-results.pkl', 'rb'))
     device = torch.device("cuda")
     model = build_model().to(device)
     pretrain_vocoder = '/home/ytang363/7100_voiceConversion/pretrain/checkpoint_step001000000_ema.pth'
@@ -21,5 +22,5 @@ if __name__ == '__main__':
         c = spect[1]
         print(name)
         waveform = wavegen(model, c=c)
-        sf.write('oct-16_'+name+'.wav', waveform, samplerate=16000)
+        sf.write(f'{process_uttr}_baseline-{name}.wav', waveform, samplerate=16000)
         count += 1

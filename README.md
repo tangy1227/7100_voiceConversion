@@ -23,7 +23,7 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN
 * `make_spect.py` to convert audio into mel-spec and output to `spmel/`
 * `make_wav.py` use to convert flac to wav for the dataset
 * `make_metadata.py` use to generate `train.pkl`
-* `make_metadata4test.py` use to generate `metadata.pkl`
+* `make_metadata4test.py` use to generate `metadata.pkl`, change the variable `process_uttr`
 * `conversion.ipynb` use trained autoVC model to generate `results.pkl`
 * `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
 
