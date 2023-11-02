@@ -8,6 +8,7 @@ pretrain/
 
 # Eval
 eval_audio/
+test.ipynb
 
 # Resource
 autovc-master/
