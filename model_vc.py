@@ -47,6 +47,7 @@ class Encoder(nn.Module):
         self.freq = freq
         
         convolutions = []
+        # Three convolutional layers "5x1 ConvNorm x 3"
         for i in range(3):
             conv_layer = nn.Sequential(
                 ConvNorm(80+dim_emb if i==0 else 512,
@@ -58,9 +59,14 @@ class Encoder(nn.Module):
             convolutions.append(conv_layer)
         self.convolutions = nn.ModuleList(convolutions)
         
+        # BLSTM x 2
         self.lstm = nn.LSTM(512, dim_neck, 2, batch_first=True, bidirectional=True)
 
     def forward(self, x, c_org):
+        """
+        x: mel-spectrogram
+        c_org: speaker embedding
+        """
         x = x.squeeze(1).transpose(2,1)
         c_org = c_org.unsqueeze(-1).expand(-1, -1, x.size(-1))
         x = torch.cat((x, c_org), dim=1)
@@ -82,7 +88,8 @@ class Encoder(nn.Module):
       
         
 class Decoder(nn.Module):
-    """Decoder module:
+    """
+    Decoder module:
     """
     def __init__(self, dim_neck, dim_emb, dim_pre):
         super(Decoder, self).__init__()
