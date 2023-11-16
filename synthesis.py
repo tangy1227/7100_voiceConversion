@@ -42,9 +42,7 @@ def build_model():
 
 
 def wavegen(model, c=None, tqdm=tqdm):
-    """Generate waveform samples by WaveNet.
-    
-    """
+    """Generate waveform samples by WaveNet."""
 
     model.eval()
     model.make_generation_fast_()
