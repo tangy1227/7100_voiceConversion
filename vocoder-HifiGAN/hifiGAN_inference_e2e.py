@@ -12,7 +12,7 @@ from hifiGAN_model import Generator
 
 h = None
 device = None
-MAX_WAV_VALUE = 32768.0
+MAX_WAV_VALUE = 32768 # 32768.0
 
 class AttrDict(dict):
     def __init__(self, *args, **kwargs):
@@ -64,7 +64,9 @@ def inference(a):
         spect_vc = pickle.load(open(filelist, 'rb'))
         for spect in spect_vc:
             name = spect[0]
-            c = torch.FloatTensor(spect[1]).to(device)
+            c = torch.FloatTensor(spect[1]).T.to(device)
+            c = torch.unsqueeze(c, 0)
+            print(c.shape)
             y_g_hat = generator(c)
             audio = y_g_hat.squeeze()
             audio = audio * MAX_WAV_VALUE

@@ -10,6 +10,7 @@ pretrain/
 eval_audio/
 eval_audio_old/
 test.ipynb
+generated_files_from_mel/
 
 # Resource
 autovc-master/
