@@ -7,7 +7,7 @@ wget-log.1
 pretrain/
 
 # Eval
-eval_audio/
+eval_audio-WaveNet/
 eval_audio_old/
 test.ipynb
 generated_files_from_mel/
@@ -16,6 +16,10 @@ generated_files_from_mel/
 autovc-master/
 hifi-gan-master/
 simple-autovc-master/
+
+# Results
+001_baseline-results/
+002_baseline-results/
 
 # other
 __pycache__/
