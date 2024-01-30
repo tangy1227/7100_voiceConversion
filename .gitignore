@@ -5,6 +5,7 @@ wget-log.1
 
 # Models
 pretrain/
+pretrained_models/
 
 # Eval
 eval_audio-WaveNet/
@@ -16,6 +17,7 @@ generated_files_from_mel/
 autovc-master/
 hifi-gan-master/
 simple-autovc-master/
+speechbrain/
 
 # Results
 001_baseline-results/

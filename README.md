@@ -28,10 +28,8 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN
 * `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
 
 ## To-Do 
-* Evaluation metric: compare with the baseline
-    * Test out the vocoder performance by comparing the input mel-spec and calculated output mel-spec
-* Validation loss implementation
-* Possible to switch to a different vocoder
+* Explore different speaker encoders
+* New train.pkl bug
 
 ## Note (Update: 11/02)
 The current `metadata.pkl` has these speaker and utterance\
