@@ -46,7 +46,7 @@ if __name__ == '__main__':
 
     # Tensorboard.
     parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs')
-    parser.add_argument('--num_ckpt', type=int, default=500) # 250000
+    parser.add_argument('--num_ckpt', type=int, default=250000) # 250000
 
     config = parser.parse_args()
     print(config)
