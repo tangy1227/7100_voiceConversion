@@ -54,8 +54,7 @@ class Solver(object):
       
     
     #=====================================================================================================================================#
-    
-
+              
                 
     def train(self):
         # Set data loader.
@@ -82,8 +81,7 @@ class Solver(object):
             except:
                 data_iter = iter(data_loader)
                 x_real, emb_org = next(data_iter)
-            
-            
+
             x_real = x_real.to(self.device) 
             emb_org = emb_org.to(self.device) 
 
@@ -95,7 +93,7 @@ class Solver(object):
             self.G = self.G.train()
                         
             # Identity mapping loss
-            # x_real shape: torch.Size([2, 128, 80])
+            # x_real shape: torch.Size([2, 128, 80]), emb_org ([2, 256])
             x_identic, x_identic_psnt, code_real = self.G(x_real, emb_org, emb_org)
             x_identic = x_identic.squeeze(1)
             x_identic_psnt = x_identic_psnt.squeeze(1)            

@@ -42,7 +42,7 @@ print(embeddings.shape)
 
 # Directory containing mel-spectrograms
 # rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'    # melspec
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-test'        # wavFile
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k'        # wavFile
 dirName, subdirList, _ = next(os.walk(rootDir))
 print('Found directory: %s' % dirName)
 
@@ -102,8 +102,8 @@ for speaker in sorted(subdirList):
         utterances.append(os.path.join(speaker,fileName))
     speakers.append(utterances)
     
-# spmel/train.pkl
-print(os.path.join(rootDir, 'train.pkl'))
-with open(os.path.join(rootDir, 'train.pkl'), 'wb') as handle:
-    pickle.dump(speakers, handle)
+# # spmel/train.pkl
+# print(os.path.join(rootDir, 'train.pkl'))
+# with open(os.path.join(rootDir, 'train.pkl'), 'wb') as handle:
+#     pickle.dump(speakers, handle)
 

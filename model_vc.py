@@ -34,7 +34,7 @@ class ConvNorm(torch.nn.Module):
             self.conv.weight, gain=torch.nn.init.calculate_gain(w_init_gain))
 
     def forward(self, signal):
-        conv_signal = self.conv(signal)
+        conv_signal = self.conv(signal) # goodshape: [2, 512, 128]
         return conv_signal
 
 
@@ -67,9 +67,10 @@ class Encoder(nn.Module):
         x: mel-spectrogram
         c_org: speaker embedding
         """
-        x = x.squeeze(1).transpose(2,1)
-        c_org = c_org.unsqueeze(-1).expand(-1, -1, x.size(-1))
-        x = torch.cat((x, c_org), dim=1)
+        # x: [], c_org: [2, 512]
+        x = x.squeeze(1).transpose(2,1) # [2, 80, 128]
+        c_org = c_org.unsqueeze(-1).expand(-1, -1, x.size(-1)) # [2, 512, 128], goodshape [2, 256, 128]
+        x = torch.cat((x, c_org), dim=1) # [2, 592, 128], goodshape [2, 336, 128]
         
         for conv in self.convolutions:
             x = F.relu(conv(x))
@@ -187,7 +188,8 @@ class Generator(nn.Module):
         self.postnet = Postnet()
 
     def forward(self, x, c_org, c_trg):
-        codes = self.encoder(x, c_org)
+        # x: [2, 128, 80]; c_org: [2, 512]
+        codes = self.encoder(x, c_org) # debug here
         if c_trg is None:
             return torch.cat(codes, dim=-1)
         

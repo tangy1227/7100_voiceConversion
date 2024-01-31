@@ -15,6 +15,8 @@ def main(config):
 
     # Data loader.
     # Get Data from spmel/ (converted melspec from wavs/)
+    # orginal size torch.Size([2, 128, 80]), torch.Size([2, 256])
+    # xvector size torch.Size([2, 128, 80]), torch.Size([2, 512])
     vcc_loader = get_loader(config.data_dir, config.batch_size, config.len_crop)
     
     solver = Solver(vcc_loader, config)
@@ -29,7 +31,7 @@ if __name__ == '__main__':
     # Model configuration.
     parser.add_argument('--lambda_cd', type=float, default=1, help='weight for hidden code loss')
     parser.add_argument('--dim_neck', type=int, default=32)
-    parser.add_argument('--dim_emb', type=int, default=256)
+    parser.add_argument('--dim_emb', type=int, default=512) # 256
     parser.add_argument('--dim_pre', type=int, default=512)
     parser.add_argument('--freq', type=int, default=32)
     
@@ -44,7 +46,7 @@ if __name__ == '__main__':
 
     # Tensorboard.
     parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs')
-    parser.add_argument('--num_ckpt', type=int, default=250000)
+    parser.add_argument('--num_ckpt', type=int, default=500) # 250000
 
     config = parser.parse_args()
     print(config)
