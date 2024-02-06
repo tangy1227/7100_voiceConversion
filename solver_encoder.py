@@ -30,6 +30,7 @@ class Solver(object):
         self.use_cuda = torch.cuda.is_available()
         self.device = torch.device('cuda:0' if self.use_cuda else 'cpu')
         self.log_step = config.log_step
+        self.val_step = 1000
 
         # Build the model and tensorboard.
         self.build_model()
@@ -125,6 +126,7 @@ class Solver(object):
             # Increment the current iteration
             current_iteration += 1            
 
+            # Save at each num_ckpt
             if (i + 1) % self.num_ckpt == 0:
                 checkpoint_path = 'model_checkpoint_{}.ckpt'.format(i + 1)
                 torch.save({

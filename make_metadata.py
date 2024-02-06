@@ -12,6 +12,9 @@ import torch
 import torchaudio
 from speechbrain.pretrained import EncoderClassifier
 
+#############################################
+#                 D-vector                  #
+#############################################
 speaker_encoder_model = '/home/ytang363/7100_voiceConversion/pretrain/3000000-BL.ckpt'
 C = D_VECTOR(dim_input=80, dim_cell=768, dim_emb=256).eval().cuda()
 c_checkpoint = torch.load(speaker_encoder_model) # model_b, model_l, optimizer
@@ -22,9 +25,6 @@ for key, val in c_checkpoint['model_b'].items():
     new_state_dict[new_key] = val
 C.load_state_dict(new_state_dict)
 
-#############################################
-#                 D-vector                  #
-#############################################
 len_crop = 128 
 tmp = np.load('/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k/p225/p225_002_mic1.npy') # (129, 80)
 left = np.random.randint(0, tmp.shape[0]-len_crop)
@@ -35,13 +35,13 @@ emb = C(melsp) # [1, 256]
 #                speechbrain                #
 #############################################
 classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb", savedir="pretrained_models/spkrec-xvect-voxceleb")
-signal, fs = torchaudio.load('/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k/p225/p225_002_mic1.wav')
+signal, fs = torchaudio.load('/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k/p226/p226_003_mic1.wav')
 embeddings = classifier.encode_batch(signal)
 embeddings = torch.squeeze(embeddings, dim=1)
 print(embeddings.shape)
 
 # Directory containing mel-spectrograms
-# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'    # melspec
+# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-test'    # melspec
 rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k'        # wavFile
 dirName, subdirList, _ = next(os.walk(rootDir))
 print('Found directory: %s' % dirName)
@@ -88,11 +88,18 @@ for speaker in sorted(subdirList):
         # embs.append(emb.detach().squeeze().cpu().numpy())
 
         ###### Speechbrain ######
-        signal, fs = torchaudio.load(filePath)
-        emb = classifier.encode_batch(signal)
-        emb = torch.squeeze(embeddings, dim=1)    
-        embs.append(emb.detach().squeeze().cpu().numpy())    
+        candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
 
+        signal, fs = torchaudio.load(filePath)
+        while len(signal[0]) < (fs): # less than a second
+            idx_alt = np.random.choice(candidates)
+            signal, fs = torchaudio.load(os.path.join(dirName, speaker, fileList[idx_alt]))
+            candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+
+        emb = classifier.encode_batch(signal)
+        emb = torch.squeeze(emb, dim=1) 
+        embs.append(emb.detach().squeeze().cpu().numpy())    
+    
     utterances.append(np.mean(embs, axis=0))
     
     # create file list
@@ -101,9 +108,8 @@ for speaker in sorted(subdirList):
             fileName = fileName.split('.')[0] + '.npy'
         utterances.append(os.path.join(speaker,fileName))
     speakers.append(utterances)
-    
-# # spmel/train.pkl
-# print(os.path.join(rootDir, 'train.pkl'))
-# with open(os.path.join(rootDir, 'train.pkl'), 'wb') as handle:
-#     pickle.dump(speakers, handle)
 
+# spmel/train.pkl
+print(os.path.join(rootDir, 'train.pkl'))
+with open(os.path.join(rootDir, 'train.pkl'), 'wb') as handle:
+    pickle.dump(speakers, handle)
