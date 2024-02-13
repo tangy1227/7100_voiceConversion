@@ -109,5 +109,3 @@ path_dir = '/home/ytang363/7100_voiceConversion'
 print(os.path.join(path_dir, 'metadata_002.pkl'))
 with open(os.path.join(path_dir, 'metadata_002.pkl'), 'wb') as handle:
     pickle.dump(speakers, handle)
-              
-

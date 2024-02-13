@@ -93,16 +93,21 @@ def get_loader(root_dir, batch_size=16, len_crop=128, num_workers=0):
     return data_loader
 
 if __name__ == '__main__':
-    data_dir = '7100_voiceConversion/autovc-master/spmel'
+    data_dir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
     vcc_loader = get_loader(root_dir=data_dir, batch_size=2, len_crop=128)
-    print(vcc_loader)
+    print(len(vcc_loader))
+    print(vcc_loader[0])
 
-    num_iter = 1
-    for i in range(num_iter):
-        data_loader = vcc_loader
-        try:
-            x_real, emb_org = next(data_iter)
-        except:
-            data_iter = iter(data_loader)
-            x_real, emb_org = next(data_iter)   
-        print(x_real)
+    # for i, (x_real, emb_org) in enumerate(vcc_loader):
+    #     print(x_real.shape)
+    #     print(emb_org.shape)
+
+    # num_iter = 1
+    # for i in range(num_iter):
+    #     data_loader = vcc_loader
+    #     try:
+    #         x_real, emb_org = next(data_iter)
+    #     except:
+    #         data_iter = iter(data_loader)
+    #         x_real, emb_org = next(data_iter)   
+    #     print(x_real)
