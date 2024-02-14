@@ -41,8 +41,8 @@ embeddings = torch.squeeze(embeddings, dim=1)
 print(embeddings.shape)
 
 # Directory containing mel-spectrograms
-# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-test'    # melspec
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k'        # wavFile
+# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/validation'    # melspec
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k-split/validation'        # wavFile
 dirName, subdirList, _ = next(os.walk(rootDir))
 print('Found directory: %s' % dirName)
 

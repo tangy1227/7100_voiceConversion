@@ -27,9 +27,11 @@ Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN
 * `conversion.ipynb` use trained autoVC model to generate `results.pkl`
 * `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
 
+## Train with different spk embeddings:
+* xvec, go to `dataLoader.py` edit the metadata path to `train_xvec.pkl`. change the dim_emb parameter in `main.py` to 512
+
 ## To-Do 
-* Explore different speaker encoders
-* New train.pkl bug
+
 
 ## Note (Update: 11/02)
 The current `metadata.pkl` has these speaker and utterance\

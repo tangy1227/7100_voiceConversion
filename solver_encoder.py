@@ -14,11 +14,12 @@ import librosa
 
 class Solver(object):
 
-    def __init__(self, vcc_loader, config):
+    def __init__(self, vcc_loader, val_loader, config):
         """Initialize configurations."""
 
         # Data loader.
         self.vcc_loader = vcc_loader
+        self.val_loader = val_loader
 
         # Model configurations.
         self.lambda_cd = config.lambda_cd
@@ -66,20 +67,21 @@ class Solver(object):
         diff = x - y
         return log_spec_dB_const * math.sqrt(np.inner(diff, diff))    
 
-    def validate(self, current_iteration):
+    def validate_diff_emb(self, current_iteration):
         """
         Need to have similar format with meta4test
         [filename, speaker embedding, spectrogram]
         """
 
-        path = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
-        train_meta_path = os.path.join(path, "train_xvec.pkl")
+        path = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/validation'
+        train_meta_path = os.path.join(path, "val.pkl") # val_xvec.pkl, val.pkl
         train_meta = pickle.load(open(train_meta_path, "rb"))
         random_indices = np.random.choice(len(train_meta), 1, replace=False) # pick 5
 
         for ind in random_indices:
             spk_meta = train_meta[ind]
 
+            # Validating with different speaker embedding
             trg_ind = np.random.randint(0, len(train_meta)) # find a new ind for target
             trg_spk_meta = train_meta[trg_ind]
 
@@ -130,6 +132,33 @@ class Solver(object):
         self.G.train()
     
 
+    def validate(self, current_iteration):
+        """
+        Need to have similar format with meta4test
+        [filename, speaker embedding, spectrogram]
+        """
+
+        val_loader = self.val_loader
+        try:
+            x_real, emb_org = next(data_iter)
+        except:
+            data_iter = iter(val_loader)
+            x_real, emb_org = next(data_iter)  
+        x_real = x_real.to(self.device) 
+        emb_org = emb_org.to(self.device)                   
+        
+        with torch.no_grad():
+            x_identic, _, _ = self.G(x_real, emb_org, emb_org)
+            x_identic = x_identic.squeeze(1)
+            val_loss = F.mse_loss(x_real, x_identic)
+
+        # Set the model back to training mode
+        self.G.train()
+
+        # Log the validation loss to TensorBoard
+        self.writer.add_scalar('G/val_loss', val_loss.item(), current_iteration)
+        
+
     #=====================================================================================================================================#
               
                 
@@ -171,7 +200,7 @@ class Solver(object):
                         
             # Identity mapping loss
             # x_real shape: torch.Size([2, 128, 80]), emb_org ([2, 256])
-            x_identic, x_identic_psnt, code_real = self.G(x_real, emb_org, emb_org)
+            x_identic, x_identic_psnt, code_real = self.G(x_real, emb_org, emb_org) # [2,128,80], [2,256]
             x_identic = x_identic.squeeze(1)
             x_identic_psnt = x_identic_psnt.squeeze(1)            
             # print(f'x_real: {x_real.shape}, x_identic: {x_identic.shape}, x_identic_psnt: {x_identic_psnt.shape}')
@@ -222,9 +251,9 @@ class Solver(object):
                 print(log)
             
             # Validation
-            # if (i+1) % self.log_step == 0:
-            print('Start validation...')
-            self.validate(current_iteration)
+            if (i+1) % (self.log_step * 5) == 0:
+                # print('Start validation...')
+                self.validate(current_iteration)
 
             # Increment the current iteration
             current_iteration += 1                    
