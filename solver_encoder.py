@@ -27,6 +27,7 @@ class Solver(object):
         self.dim_emb = config.dim_emb
         self.dim_pre = config.dim_pre
         self.freq = config.freq
+        self.dim_emb_orig = config.dim_emb_orig
 
         # Training configurations.
         self.batch_size = config.batch_size
@@ -38,6 +39,9 @@ class Solver(object):
         self.log_step = config.log_step
         self.val_step = 1000
 
+        # Save Model.
+        self.model_name = config.model_name
+
         # Build the model and tensorboard.
         self.build_model()
 
@@ -47,7 +51,7 @@ class Solver(object):
 
             
     def build_model(self):
-        self.G = Generator(self.dim_neck, self.dim_emb, self.dim_pre, self.freq)        
+        self.G = Generator(self.dim_neck, self.dim_emb, self.dim_pre, self.freq, self.dim_emb_orig)        
         self.g_optimizer = torch.optim.Adam(self.G.parameters(), 0.0001)
         self.G.to(self.device)
         
@@ -119,8 +123,7 @@ class Solver(object):
                 print(type(trg_uttr))
                 print(type(uttr_trg))
                 min_cost, _ = librosa.sequence.dtw(trg_uttr, uttr_trg, metric=cost_function)                      
-
-                value = None
+                
 
         # # Calculate average validation loss
 
@@ -148,9 +151,23 @@ class Solver(object):
         emb_org = emb_org.to(self.device)                   
         
         with torch.no_grad():
-            x_identic, _, _ = self.G(x_real, emb_org, emb_org)
+            # x_identic, _, _ = self.G(x_real, emb_org, emb_org)
+            # x_identic = x_identic.squeeze(1)
+            # val_loss = F.mse_loss(x_real, x_identic)
+
+            # Identity mapping loss
+            x_identic, x_identic_psnt, code_real = self.G(x_real, emb_org, emb_org)
             x_identic = x_identic.squeeze(1)
-            val_loss = F.mse_loss(x_real, x_identic)
+            x_identic_psnt = x_identic_psnt.squeeze(1)            
+            g_loss_id = F.mse_loss(x_real, x_identic)   
+            g_loss_id_psnt = F.mse_loss(x_real, x_identic_psnt)   
+            
+            # Code semantic loss.
+            code_reconst = self.G(x_identic_psnt, emb_org, None)
+            g_loss_cd = F.l1_loss(code_real, code_reconst)
+
+            # Backward and optimize.
+            val_loss = g_loss_id + g_loss_id_psnt + self.lambda_cd * g_loss_cd            
 
         # Set the model back to training mode
         self.G.train()
@@ -230,7 +247,7 @@ class Solver(object):
 
             # Save at each num_ckpt
             if (i + 1) % self.num_ckpt == 0:
-                checkpoint_path = 'model_checkpoint_{}.ckpt'.format(i + 1)
+                checkpoint_path = '{}_{}.ckpt'.format(self.model_name, (i + 1))
                 torch.save({
                             'model': self.G.state_dict(),
                             'optimizer': self.g_optimizer.state_dict(),
@@ -258,7 +275,7 @@ class Solver(object):
             # Increment the current iteration
             current_iteration += 1                    
 
-        save_model_path = 'model_checkpoint_{}.ckpt'.format(i + 1)
+        save_model_path = '{}_{}.ckpt'.format(self.model_name, (i + 1))
         torch.save({
             'model': self.G.state_dict(),
             'optimizer': self.g_optimizer.state_dict(),

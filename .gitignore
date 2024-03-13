@@ -5,7 +5,11 @@ wget-log.1
 
 # Models
 pretrain/
-pretrained_models/
+model_16/
+model_32/
+model_64/
+model_128/
+model_retrained/
 
 # Eval
 eval_audio-WaveNet/
@@ -22,6 +26,9 @@ speechbrain/
 # Results
 001_baseline-results/
 002_baseline-results/
+
+# Audios
+audio_test/
 
 # other
 __pycache__/

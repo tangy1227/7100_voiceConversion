@@ -15,7 +15,7 @@ def main(config):
 
     # Data loader.
     # Get Data from spmel/ (converted melspec from wavs/)
-    # orginal size torch.Size([2, 128, 80]), torch.Size([2, 256])
+    # dvector size torch.Size([2, 128, 80]), torch.Size([2, 256])
     # xvector size torch.Size([2, 128, 80]), torch.Size([2, 512])
     vcc_loader = get_loader(config.data_dir, config.batch_size, config.len_crop)
     val_loader = get_loader(config.val_dir, config.batch_size, config.len_crop)
@@ -31,10 +31,11 @@ if __name__ == '__main__':
 
     # Model configuration.
     parser.add_argument('--lambda_cd', type=float, default=1, help='weight for hidden code loss')
-    parser.add_argument('--dim_neck', type=int, default=32)
+    parser.add_argument('--dim_neck', type=int, default=128) # org: 32
     parser.add_argument('--dim_emb', type=int, default=256) # Dvec: 256, xvec: 512
     parser.add_argument('--dim_pre', type=int, default=512)
     parser.add_argument('--freq', type=int, default=32)
+    parser.add_argument('--dim_emb_orig', type=int, default=512) # xvec: 512 or None
     
     # Training configuration.
     parser.add_argument('--data_dir', type=str, default='/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/train')
@@ -47,8 +48,11 @@ if __name__ == '__main__':
     parser.add_argument('--log_step', type=int, default=100)
 
     # Tensorboard.
-    parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs')
+    parser.add_argument('--log_dir', type=str, default='/home/ytang363/7100_voiceConversion/logs/xvec_128')
     parser.add_argument('--num_ckpt', type=int, default=250000) # 250000
+
+    # Save Model.
+    parser.add_argument('--model_name', type=str, default='model_checkpoint_xvec_128')
 
     config = parser.parse_args()
     print(config)

@@ -180,21 +180,38 @@ class Postnet(nn.Module):
 
 class Generator(nn.Module):
     """Generator network."""
-    def __init__(self, dim_neck, dim_emb, dim_pre, freq):
+    def __init__(self, dim_neck, dim_emb, dim_pre, freq, dim_emb_orig):
         super(Generator, self).__init__()
-        
+
+        # if dim_emb_orig == None:
+        if dim_emb_orig:
+            # dim_emb_orig = dim_emb
+            self.proj = nn.Linear(dim_emb_orig, dim_emb)
+        else:
+            dim_emb_orig = dim_emb
+            self.proj = nn.Identity()
+
         self.encoder = Encoder(dim_neck, dim_emb, freq)
         self.decoder = Decoder(dim_neck, dim_emb, dim_pre)
         self.postnet = Postnet()
 
     def forward(self, x, c_org, c_trg):
-        # x: [2, 128, 80]; c_org: [2, 512]
+        # before: [2, 512]
+        c_org = self.proj(c_org) # project everything to [2, 256]
+        c_org = nn.functional.normalize(c_org, dim=1) # normalization
+
         codes = self.encoder(x, c_org) # debug here
         if c_trg is None:
             return torch.cat(codes, dim=-1)
         
+        c_trg = self.proj(c_trg) # projection
+        c_trg = nn.functional.normalize(c_trg, dim=1)
+        
         tmp = []
         for code in codes:
+            # codes has shape: [2, 64]
+            # adds a new dimension at index 1: [2, 1, 64]
+            # x.size(1)/len(codes) = 32: [2, 32, 64]
             tmp.append(code.unsqueeze(1).expand(-1,int(x.size(1)/len(codes)),-1))
         code_exp = torch.cat(tmp, dim=1)
         

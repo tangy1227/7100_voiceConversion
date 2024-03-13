@@ -19,3 +19,14 @@ class D_VECTOR(nn.Module):
         embeds_normalized = embeds.div(norm)
         return embeds_normalized
     
+if __name__ == '__main__':
+    model = D_VECTOR(num_layers=3, dim_input=40, dim_cell=256, dim_emb=64)
+    # Create a sample input tensor
+    batch_size = 32
+    sequence_length = 100
+    input_tensor = torch.rand((batch_size, sequence_length, 40)) 
+    # Forward pass through the model
+    output = model(input_tensor)
+
+    # Print the output shape
+    print("Output shape:", output.shape)    

@@ -5,14 +5,16 @@
 
 ## Proposal
 Research about different embedding for the VC system \
-Speaker encoder: D-Vector \
-Linguistic Content: Conformer (ASR), Wav2Vec \
-Possible Prosodic Encoder: ? \
-Decoder: AutoVC decoder \
-Vocoder: Wavenet, HiFi-GAN, Parallel WaveGAN 
+**Speaker encoder**: D-Vector, X-Vector \
+**Linguistic Content**: No new linguistic encoder, AutoVC encoder contains the info already \
+**Prosodic Encoder**: No new prosodic encoder, AutoVC encoder contains the pitch info already \
+**Decoder**: AutoVC decoder \
+**Vocoder**: Wavenet, HiFi-GAN, Parallel WaveGAN? 
 
 ## Filename Notes
-`model_bl` D-Vector Model
+`model_bl` D-Vector Model \
+`synthesis.py` WaveNet \
+`vocoder.py` WaveNet inferencing at background \
 
 ## Model Filename Notes
 `3000000-BL.ckpt` pretrained speech encoder Wan et al. [2018] \
@@ -48,6 +50,14 @@ file name: p234_245_mic1.npy, shape: (187, 80)\
 file name: p236_268_mic1.npy, shape: (195, 80)
 
 `metadata_001` has speaker ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p237']
+
+## Evaluation Idea
+* Find the better model for xvec, `model_16` or `model_64`, or doesn't matter
+* Currently have only uttr of "001" and "002", add more utt?? Evaluate the speaker only from the *test split* which are ['p231', 'p243', 'p272', 'p279', 'p314', 'p339']
+    * Need to generate new metadata for test
+* Continue using `metric-mcd.ipynb` for evaluating the MCD metrics
+* For comparing the output quality from the two vocoder, use the `metric-SDR_PESQ.ipynb`
+    * WaveNet audio output folder `eval_audio-WaveNet`. or recalculate the output again with the `model_retrained`
 
 ## Resources
 https://github.com/KnurpsBram/AutoVC_WavenetVocoder_GriffinLim_experiments/blob/master/AutoVC_WavenetVocoder_GriffinLim_experiments_17jun2020.ipynb
