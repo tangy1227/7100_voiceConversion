@@ -107,7 +107,8 @@ for speaker in sorted(subdirList):
             candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
 
             signal, fs = torchaudio.load(filePath)
-            while len(signal[0]) < (fs): # less than a second
+            ## Protential bug fix here
+            while len(signal[0]) < (fs): # less than a second 
                 idx_alt = np.random.choice(candidates)
                 signal, fs = torchaudio.load(os.path.join(dirName, speaker, fileList[idx_alt]))
                 candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
@@ -122,6 +123,7 @@ for speaker in sorted(subdirList):
             candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
 
             wav = preprocess_wav(filePath)
+            # signal, fs = torchaudio.load(filePath)
             while len(signal[0]) < (fs): # less than a second
                 idx_alt = np.random.choice(candidates)
                 wav = preprocess_wav(os.path.join(dirName, speaker, fileList[idx_alt]))

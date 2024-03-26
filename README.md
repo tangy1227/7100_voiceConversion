@@ -1,11 +1,11 @@
 # Study of Encoder Embeddings of Any-to-Any Voice Conversion
 
-## AutoVC Baseline
+## [AutoVC](https://github.com/auspicious3000/autovc) Baseline
 * Vanilla autoencoder serves as a measure of how well the network is reconstructing the input data
 
 ## Proposal
-Research about different embedding for the VC system \
-**Speaker encoder**: D-Vector, X-Vector \
+Research and benchmark different speaker embeddings for the voice conversion system \
+**Speaker encoder**: D-Vector (baseline), [X-Vector](https://github.com/speechbrain/speechbrain/blob/develop/speechbrain/lobes/models/Xvector.py), [Resemblyzer](https://github.com/resemble-ai/Resemblyzer) \
 **Linguistic Content**: No new linguistic encoder, AutoVC encoder contains the info already \
 **Prosodic Encoder**: No new prosodic encoder, AutoVC encoder contains the pitch info already \
 **Decoder**: AutoVC decoder \
@@ -31,6 +31,7 @@ Research about different embedding for the VC system \
 
 ## Train with different spk embeddings:
 * xvec, go to `dataLoader.py` edit the metadata path to `train_xvec.pkl`. change the dim_emb parameter in `main.py` to 512
+* res, ... dim_emb parameter in `main.py` is the same with baseline 256
 
 ## To-Do 
 

@@ -12,9 +12,10 @@ import numpy as np
 import torch
 
 import torchaudio
-
-#----------------- X-vector -----------------#
 from speechbrain.pretrained import EncoderClassifier
+
+from resemblyzer import VoiceEncoder, preprocess_wav
+from pathlib import Path
 
 #############################################
 #                 D-vector                  #
@@ -30,13 +31,14 @@ C.load_state_dict(new_state_dict)
 
 num_uttrs = 20 # number of uttrs to determine the averaging for the spk embedding
 len_crop = 128
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
-# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k' 
+# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k'
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k' 
 dirName, subdirList, _ = next(os.walk(rootDir))
 # process_speakers = ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p237'] # old_speakers
 process_speakers = ['p231', 'p243', 'p272', 'p279', 'p314', 'p339'] # test split speakers
 process_uttr = '390'
 speakers = []
+spk_emb_name = 'resemblyzer' # dvec, xvec, resemblyzer
 
 for speaker in sorted(subdirList):
     dirName, subdirList, _ = next(os.walk(rootDir))
@@ -58,35 +60,53 @@ for speaker in sorted(subdirList):
         filePath = os.path.join(dirName, speaker, fileList[idx_uttrs[i]])
 
         ###### D-vector Model ######
-        tmp = np.load(filePath)
-        candidates = np.delete(np.arange(len(fileList)), idx_uttrs) # remove the idx_uttrs and create a new array with size of [speaker uttr - len(idx_uttrs)]
+        if spk_emb_name == 'dvec':
+            tmp = np.load(filePath)
+            candidates = np.delete(np.arange(len(fileList)), idx_uttrs) # remove the idx_uttrs and create a new array with size of [speaker uttr - len(idx_uttrs)]
 
-        # choose another utterance if the current one is too short
-        while tmp.shape[0] <= len_crop:
-            idx_alt = np.random.choice(candidates)
-            tmp = np.load(os.path.join(dirName, speaker, fileList[idx_alt]))
-            candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+            # choose another utterance if the current one is too short
+            while tmp.shape[0] <= len_crop:
+                idx_alt = np.random.choice(candidates)
+                tmp = np.load(os.path.join(dirName, speaker, fileList[idx_alt]))
+                candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
 
-        left = np.random.randint(0, tmp.shape[0]-len_crop)
-        melsp = torch.from_numpy(tmp[np.newaxis, left:left+len_crop, :]).cuda() # shape: [1, 128, 80]
+            left = np.random.randint(0, tmp.shape[0]-len_crop)
+            melsp = torch.from_numpy(tmp[np.newaxis, left:left+len_crop, :]).cuda() # shape: [1, 128, 80]
 
-        emb = C(melsp) # shape: (1, 256)
-        embs.append(emb.detach().squeeze().cpu().numpy()) # shape: (10, 256), and after taking the mean, it becomes (256, )
+            emb = C(melsp) # shape: (1, 256)
+            embs.append(emb.detach().squeeze().cpu().numpy()) # shape: (10, 256), and after taking the mean, it becomes (256, )
 
-        # ###### Speechbrain ######
-        # candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
+        ###### Speechbrain ######
+        if spk_emb_name == 'xvec':
+            candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
 
-        # signal, fs = torchaudio.load(filePath)
-        # while len(signal[0]) < (fs): # less than a second
-        #     idx_alt = np.random.choice(candidates)
-        #     signal, fs = torchaudio.load(os.path.join(dirName, speaker, fileList[idx_alt]))
-        #     candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+            signal, fs = torchaudio.load(filePath)
+            while len(signal[0]) < (fs): # less than a second
+                idx_alt = np.random.choice(candidates)
+                signal, fs = torchaudio.load(os.path.join(dirName, speaker, fileList[idx_alt]))
+                candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
 
-        # classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb", 
-        #                                             savedir="pretrained_models/spkrec-xvect-voxceleb")
-        # emb = classifier.encode_batch(signal)
-        # emb = torch.squeeze(emb, dim=1) 
-        # embs.append(emb.detach().squeeze().cpu().numpy())          
+            classifier = EncoderClassifier.from_hparams(source="speechbrain/spkrec-xvect-voxceleb", 
+                                                        savedir="pretrained_models/spkrec-xvect-voxceleb")
+            emb = classifier.encode_batch(signal)
+            emb = torch.squeeze(emb, dim=1) 
+            embs.append(emb.detach().squeeze().cpu().numpy())          
+
+        ###### resemblyzer ######
+        if spk_emb_name == 'resemblyzer':
+            encoder = VoiceEncoder()
+            candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
+
+            wav = preprocess_wav(filePath)
+            signal, fs = torchaudio.load(filePath)
+            while len(signal[0]) < (fs): # less than a second
+                idx_alt = np.random.choice(candidates)
+                wav = preprocess_wav(os.path.join(dirName, speaker, fileList[idx_alt]))
+                candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+
+            emb = encoder.embed_utterance(wav)
+            embs.append(emb)   
+
 
     #### Add Second element to utterances ####
     utterances.append(np.mean(embs, axis=0)) # utterances = ['speaker', embs: (256, )]
@@ -108,6 +128,6 @@ for speaker in sorted(subdirList):
 
     speakers.append(utterances)
 
-path_dir = '/home/ytang363/7100_voiceConversion/metadata_test'
-with open(os.path.join(path_dir, f'dvec_metadata_{process_uttr}.pkl'), 'wb') as handle:
+path_dir = '/home/ytang363/7100_voiceConversion/metadata/metadata_test'
+with open(os.path.join(path_dir, f'res_metadata_{process_uttr}.pkl'), 'wb') as handle:
     pickle.dump(speakers, handle)
