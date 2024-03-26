@@ -15,7 +15,7 @@ class Utterances(data.Dataset):
         self.len_crop = len_crop
         self.step = 10
         
-        metaname = os.path.join(self.root_dir, "train_xvec.pkl") # "train.pkl", "train_xvec.pkl"
+        metaname = os.path.join(self.root_dir, "train_res.pkl") # "train.pkl", "train_xvec.pkl", "train_res.pkl"
         print(metaname)
         meta = pickle.load(open(metaname, "rb"))
         

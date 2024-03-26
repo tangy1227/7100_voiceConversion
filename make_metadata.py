@@ -43,16 +43,31 @@ embeddings = classifier.encode_batch(signal)
 embeddings = torch.squeeze(embeddings, dim=1)
 print(embeddings.shape)
 
+#############################################
+#                resemblyzer                #
+#############################################
+fpath = Path("/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k/p226/p226_003_mic1.wav")
+wav = preprocess_wav(fpath)
+
+encoder = VoiceEncoder()
+embed = encoder.embed_utterance(wav)
+np.set_printoptions(precision=3, suppress=True)
+print(embed.shape)
+
+
+##########################################################################################
 # Directory containing mel-spectrograms
-rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/test'    # melspec
-# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k-split/test'        # wavFile
+# rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/test'    # melspec
+rootDir = '/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/wav-16k-split/validation'        # wavFile
 dirName, subdirList, _ = next(os.walk(rootDir))
 print('Found directory: %s' % dirName)
 
-num_uttrs = 10 # 10
-len_crop = 128 # 128
+num_uttrs = 10
+len_crop = 128
 speakers = []
 count = 0
+spk_emb_name = 'resemblyzer' # dvec, xvec, resemblyzer
+
 for speaker in sorted(subdirList):
 
     print('Processing speaker: %s' % speaker)
@@ -66,38 +81,54 @@ for speaker in sorted(subdirList):
     embs = []
     for i in range(num_uttrs):
         filePath = os.path.join(dirName, speaker, fileList[idx_uttrs[i]])
-
-        ###### D-vector Model ######
-        tmp = np.load(filePath)
-        candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
         
-        # choose another utterance if the current one is too short
-        while tmp.shape[0] < len_crop:
-            idx_alt = np.random.choice(candidates)
-            tmp = np.load(os.path.join(dirName, speaker, fileList[idx_alt]))
-            candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+        ###### D-vector Model ######
+        if spk_emb_name == 'dvec':
+            tmp = np.load(filePath)
+            candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
+            
+            # choose another utterance if the current one is too short
+            while tmp.shape[0] < len_crop:
+                idx_alt = np.random.choice(candidates)
+                tmp = np.load(os.path.join(dirName, speaker, fileList[idx_alt]))
+                candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
 
-        if tmp.shape[0]-len_crop == 0:
-            left = 0
-        else:
-            left = np.random.randint(0, tmp.shape[0]-len_crop)
-        melsp = torch.from_numpy(tmp[np.newaxis, left:left+len_crop, :]).cuda()
+            if tmp.shape[0]-len_crop == 0:
+                left = 0
+            else:
+                left = np.random.randint(0, tmp.shape[0]-len_crop)
+            melsp = torch.from_numpy(tmp[np.newaxis, left:left+len_crop, :]).cuda()
 
-        emb = C(melsp)
-        embs.append(emb.detach().squeeze().cpu().numpy())
+            emb = C(melsp)
+            embs.append(emb.detach().squeeze().cpu().numpy())
 
-        # ###### Speechbrain ######
-        # candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
+        ###### Speechbrain ######
+        if spk_emb_name == 'xvec':
+            candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
 
-        # signal, fs = torchaudio.load(filePath)
-        # while len(signal[0]) < (fs): # less than a second
-        #     idx_alt = np.random.choice(candidates)
-        #     signal, fs = torchaudio.load(os.path.join(dirName, speaker, fileList[idx_alt]))
-        #     candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+            signal, fs = torchaudio.load(filePath)
+            while len(signal[0]) < (fs): # less than a second
+                idx_alt = np.random.choice(candidates)
+                signal, fs = torchaudio.load(os.path.join(dirName, speaker, fileList[idx_alt]))
+                candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
 
-        # emb = classifier.encode_batch(signal)
-        # emb = torch.squeeze(emb, dim=1) 
-        # embs.append(emb.detach().squeeze().cpu().numpy())    
+            emb = classifier.encode_batch(signal)
+            emb = torch.squeeze(emb, dim=1) 
+            embs.append(emb.detach().squeeze().cpu().numpy())    
+
+        ###### resemblyzer ######
+        if spk_emb_name == 'resemblyzer':
+            encoder = VoiceEncoder()
+            candidates = np.delete(np.arange(len(fileList)), idx_uttrs)
+
+            wav = preprocess_wav(filePath)
+            while len(signal[0]) < (fs): # less than a second
+                idx_alt = np.random.choice(candidates)
+                wav = preprocess_wav(os.path.join(dirName, speaker, fileList[idx_alt]))
+                candidates = np.delete(candidates, np.argwhere(candidates==idx_alt))
+
+            emb = encoder.embed_utterance(wav)
+            embs.append(emb)                           
     
     utterances.append(np.mean(embs, axis=0))
     
@@ -109,6 +140,6 @@ for speaker in sorted(subdirList):
     speakers.append(utterances)
 
 # spmel/train.pkl
-print(os.path.join(rootDir, 'train.pkl'))
-# with open(os.path.join(rootDir, 'train.pkl'), 'wb') as handle:
-#     pickle.dump(speakers, handle)
+print(os.path.join(rootDir, 'train_res.pkl'))
+with open(os.path.join(rootDir, 'train_res.pkl'), 'wb') as handle:
+    pickle.dump(speakers, handle)
