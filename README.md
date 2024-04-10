@@ -1,4 +1,5 @@
 # Study of Encoder Embeddings of Any-to-Any Voice Conversion
+### [Project Slides](https://docs.google.com/presentation/d/1aN0-b5HOtv_MIFXhAyAO_j3vy228EclpQDngsl8IFBo/edit?usp=sharing)
 
 ## [AutoVC](https://github.com/auspicious3000/autovc) Baseline
 Zero-shot voice conversion system based on autoencoder
