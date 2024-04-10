@@ -1,19 +1,22 @@
 # Study of Encoder Embeddings of Any-to-Any Voice Conversion
 
 ## [AutoVC](https://github.com/auspicious3000/autovc) Baseline
-* Vanilla autoencoder serves as a measure of how well the network is reconstructing the input data
+Zero-shot voice conversion system based on autoencoder
 
 ## Proposal
 Research and benchmark different speaker embeddings for the voice conversion system \
 **Speaker encoder**: D-Vector (baseline), [X-Vector](https://github.com/speechbrain/speechbrain/blob/develop/speechbrain/lobes/models/Xvector.py), [Resemblyzer](https://github.com/resemble-ai/Resemblyzer) \
-**Linguistic Content**: No new linguistic encoder, AutoVC encoder contains the info already \
+**Linguistic Content**: No new linguistic encoder, AutoVC encoder contains this info already \
 **Prosodic Encoder**: No new prosodic encoder, AutoVC encoder contains the pitch info already \
 **Decoder**: AutoVC decoder \
 **Vocoder**: Wavenet, HiFi-GAN, Parallel WaveGAN? 
 
 ## Filename Notes
-`model_bl` D-Vector Model \
-`synthesis.py` WaveNet \
+`main.py` run training process \
+`model_vc.py` model architecture code \
+`solver_encoder.py` training code \
+`model_bl.py` D-Vector speaker embedding Model \
+`synthesis.py` WaveNet vocoder \
 `vocoder.py` WaveNet inferencing at background \
 
 ## Model Filename Notes
@@ -29,36 +32,52 @@ Research and benchmark different speaker embeddings for the voice conversion sys
 * `conversion.ipynb` use trained autoVC model to generate `results.pkl`
 * `vocoder.ipynb` load in the `results.pkl` and the pretrained vocder to output the coversion
 
-## Train with different spk embeddings:
+## Training with different spk embeddings:
 * xvec, go to `dataLoader.py` edit the metadata path to `train_xvec.pkl`. change the dim_emb parameter in `main.py` to 512
 * res, ... dim_emb parameter in `main.py` is the same with baseline 256
 
-## To-Do 
+## Testset Note
+uttr002: 'Ask her to bring these things with her from the store.'\
+uttr010: 'People look, but no one ever finds it.'\
 
+uttr050:
+* p231: 'People look, but no one ever finds it.'
+* p243: 'Have I really come to this?'
+* p272: 'This represents a tough game for us.'
+* p279: 'The judge said.'
+* p314: 'We have no choice but to shut down.'
+* p339: 'It is a hard act to follow, the Winning act.'
 
-## Note (Update: 11/02)
-The current `metadata.pkl` has these speaker and utterance\
-file name: p225_298_mic1.npy, shape: (194, 80)\
-file name: p226_076_mic1.npy, shape: (180, 80)\
-file name: p227_091_mic1.npy, shape: (190, 80)\
-file name: p228_157_mic1.npy, shape: (279, 80)\
-file name: p229_305_mic1.npy, shape: (146, 80)\
-file name: p230_017_mic1.npy, shape: (249, 80)\
-file name: p231_361_mic1.npy, shape: (137, 80)\
-file name: p232_328_mic1.npy, shape: (189, 80)\
-file name: p233_386_mic1.npy, shape: (136, 80)\
-file name: p234_245_mic1.npy, shape: (187, 80)\
-file name: p236_268_mic1.npy, shape: (195, 80)
+uttr150:
+* p231: 'We have a clean bill of health.'
+* p243: 'Did he trip?'
+* p272: 'Labour's Scottish general secretary Alex Rowley was delighted yesterday.'
+* p279: 'In each case they were a goal down.'
+* p314: 'It was a moment of madness.'
+* p339: 'Mind you, all was not lost.'
 
-`metadata_001` has speaker ['p225', 'p226', 'p227', 'p228', 'p229', 'p230', 'p231', 'p232', 'p233', 'p234', 'p237']
+uttr275:
+* p231: 'It does not work that way in Scottish football.'
+* p243: 'It is also seeking a national mortgage rescue plan.'
+* p272: 'All options are open.'
+* p279: 'The script was funny.'
+* p314: 'He has lost confidence and weight.'
+* p339: 'This time it really could happen.'
+
+uttr390:
+* p231: 'It was fit for royalty.'
+* p243: 'His record on Government has always been highly effective.'
+* p272: 'It's like a basketball.'
+* p279: 'However, BBC Scotland was not interested in his work.'
+* p314: 'It was early morning.'
+* p339: 'He has run a hell of a race.'
 
 ## Evaluation Idea
-* Find the better model for xvec, `model_16` or `model_64`, or doesn't matter
-* Currently have only uttr of "001" and "002", add more utt?? Evaluate the speaker only from the *test split* which are ['p231', 'p243', 'p272', 'p279', 'p314', 'p339']
-    * Need to generate new metadata for test
-* Continue using `metric-mcd.ipynb` for evaluating the MCD metrics
+* Find the better model for xvec, `model_16` or `model_64`
+* Using `metric-mcd.ipynb` for evaluating the MCD metrics
 * For comparing the output quality from the two vocoder, use the `metric-SDR_PESQ.ipynb`
     * WaveNet audio output folder `eval_audio-WaveNet`. or recalculate the output again with the `model_retrained`
+* Word Error Rate evaluation using `word_err_rate.ipynb`
 
 ## Resources
 https://github.com/KnurpsBram/AutoVC_WavenetVocoder_GriffinLim_experiments/blob/master/AutoVC_WavenetVocoder_GriffinLim_experiments_17jun2020.ipynb

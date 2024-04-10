@@ -41,7 +41,7 @@ if __name__ == '__main__':
     parser.add_argument('--data_dir', type=str, default='/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/train')
     parser.add_argument('--val_dir', type=str, default='/home/ytang363/7100_voiceConversion/VCTK-Corpus-0.92/spmel-16k-split/validation')
     parser.add_argument('--batch_size', type=int, default=2, help='mini-batch size') # 2
-    parser.add_argument('--num_iters', type=int, default=1500000, help='number of total iterations') # 1500000
+    parser.add_argument('--num_iters', type=int, default=3000000, help='number of total iterations') # 1500000
     parser.add_argument('--len_crop', type=int, default=128, help='dataloader output sequence length')
     
     # Miscellaneous.

@@ -25,12 +25,10 @@ hifi-gan-master/
 simple-autovc-master/
 speechbrain/
 
-# Results
-001_baseline-results/
-002_baseline-results/
-
 # Audios
 audio_test/
+001_baseline-results/
+002_baseline-results/
 
 # other
 __pycache__/
